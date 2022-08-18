@@ -32,7 +32,8 @@ impl <X: XConn> Hook<X> for StartupScript {
 
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "dmenu_run";
-const STARTUP_HOOK_PATH: &str = "$HOME/zwm";
+const STARTUP_HOOK_PATH: &str = "$HOME/.config/zwm/autostart.sh";
+const BROWSER: &str = "google-chrome";
 
 fn main() -> Result<()> {
     if let Err(e) = SimpleLogger::init(LevelFilter::Info, simplelog::Config::default()) {
@@ -62,6 +63,7 @@ fn main() -> Result<()> {
         "M-A-Escape" => run_internal!(exit);
         "M-Return" => run_external!(TERMINAL);
         "M-p" => run_external!(LAUNCHER);
+        "M-b" => run_external!(BROWSER);
 
         map: { "1", "2", "3", "4", "5", "6", "7", "8", "9" } to index_selectors(9) => {
             "M-{}" => focus_workspace (REF);
