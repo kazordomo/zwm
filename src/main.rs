@@ -32,7 +32,6 @@ impl <X: XConn> Hook<X> for StartupScript {
 
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "dmenu_run";
-const STARTUP_HOOK_PATH: &str = "$HOME/.config/zwm/autostart.sh";
 const BROWSER: &str = "google-chrome";
 
 fn main() -> Result<()> {
@@ -41,7 +40,7 @@ fn main() -> Result<()> {
     };
 
     let config = Config::default();
-    let hooks: Hooks<XcbConnection> = vec![Box::new(StartupScript::new(STARTUP_HOOK_PATH))];
+    let hooks: Hooks<XcbConnection> = vec![Box::new(StartupScript::new("/usr/local/scripts/zwm-stratup.sh"))];
 
     let key_bindings = gen_keybindings! {
         "M-j" => run_internal!(cycle_client, Forward);
