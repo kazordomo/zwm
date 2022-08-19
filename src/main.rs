@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate penrose;
-
 use penrose::{
     core::{
         bindings::MouseEvent, config::Config, helpers::index_selectors, hooks::Hooks, hooks::Hook,
@@ -11,10 +10,15 @@ use penrose::{
     xcb::new_xcb_backed_window_manager,
     Backward, Forward, Less, More, Result, XcbConnection,
 };
-
 use simplelog::{LevelFilter, SimpleLogger};
 
-pub struct StartupScript {
+mod on_startup;
+use on_startup::*;
+
+mod theme_config;
+use theme_config::*;
+
+struct StartupScript {
     path: String,
 }
 
@@ -30,6 +34,7 @@ impl <X: XConn> Hook<X> for StartupScript {
     }
 }
 
+// TODO: remove and use config data
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "dmenu_run";
 const BROWSER: &str = "google-chrome";
