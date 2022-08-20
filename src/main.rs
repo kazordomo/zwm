@@ -2,39 +2,18 @@
 extern crate penrose;
 use penrose::{
     core::{
-        bindings::MouseEvent, config::Config, helpers::index_selectors, hooks::Hooks, hooks::Hook,
-        manager::WindowManager, xconnection::XConn,
+        bindings::MouseEvent, config::Config, helpers::index_selectors, hooks::Hooks,
+        manager::WindowManager,
     },
     logging_error_handler,
-    spawn,
     xcb::new_xcb_backed_window_manager,
     Backward, Forward, Less, More, Result, XcbConnection,
 };
 use simplelog::{LevelFilter, SimpleLogger};
 
 mod on_startup;
-use on_startup::*;
 
-mod theme_config;
-use theme_config::*;
-
-struct StartupScript {
-    path: String,
-}
-
-impl StartupScript {
-    pub fn new(s: impl Into<String>) -> Self {
-        Self { path: s.into() }
-    } 
-}
-
-impl <X: XConn> Hook<X> for StartupScript {
-    fn startup(&mut self, _: &mut WindowManager<X>) -> Result<()> {
-        spawn!(&self.path)
-    }
-}
-
-// TODO: remove and use config data
+// TODO: remove and use config file
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "dmenu_run";
 const BROWSER: &str = "google-chrome";
@@ -45,7 +24,7 @@ fn main() -> Result<()> {
     };
 
     let config = Config::default();
-    let hooks: Hooks<XcbConnection> = vec![Box::new(StartupScript::new("/usr/local/scripts/zwm-stratup.sh"))];
+    let hooks: Hooks<XcbConnection> = vec![Box::new(on_startup::StartupScript::new("/usr/local/scripts/zwm-startup.sh"))];
 
     let key_bindings = gen_keybindings! {
         "M-j" => run_internal!(cycle_client, Forward);
