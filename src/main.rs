@@ -2,21 +2,14 @@
 extern crate penrose;
 use penrose::{
     core::{
-        bindings::MouseEvent, config::Config, helpers::index_selectors, hooks::Hooks,
-        manager::WindowManager,
+        config::Config, hooks::Hooks,
     },
-    logging_error_handler,
-    xcb::new_xcb_backed_window_manager,
-    Backward, Forward, Less, More, Result, XcbConnection,
+    Result, XcbConnection,
 };
 use simplelog::{LevelFilter, SimpleLogger};
 
 mod on_startup;
-
-// TODO: remove and use config file
-const TERMINAL: &str = "alacritty";
-const LAUNCHER: &str = "dmenu_run";
-const BROWSER: &str = "google-chrome";
+mod keybindings;
 
 fn main() -> Result<()> {
     if let Err(e) = SimpleLogger::init(LevelFilter::Info, simplelog::Config::default()) {
@@ -26,41 +19,5 @@ fn main() -> Result<()> {
     let config = Config::default();
     let hooks: Hooks<XcbConnection> = vec![Box::new(on_startup::StartupScript::new("/usr/local/scripts/zwm-startup.sh"))];
 
-    let key_bindings = gen_keybindings! {
-        "M-j" => run_internal!(cycle_client, Forward);
-        "M-k" => run_internal!(cycle_client, Backward);
-        "M-S-j" => run_internal!(drag_client, Forward);
-        "M-S-k" => run_internal!(drag_client, Backward);
-        "M-S-q" => run_internal!(kill_client);
-        "M-Tab" => run_internal!(toggle_workspace);
-        "M-bracketright" => run_internal!(cycle_screen, Forward);
-        "M-bracketleft" => run_internal!(cycle_screen, Backward);
-        "M-S-bracketright" => run_internal!(drag_workspace, Forward);
-        "M-S-bracketleft" => run_internal!(drag_workspace, Backward);
-        "M-grave" => run_internal!(cycle_layout, Forward);
-        "M-S-grave" => run_internal!(cycle_layout, Backward);
-        "M-A-Up" => run_internal!(update_max_main, More);
-        "M-A-Down" => run_internal!(update_max_main, Less);
-        "M-A-Right" => run_internal!(update_main_ratio, More);
-        "M-A-Left" => run_internal!(update_main_ratio, Less);
-        "M-A-Escape" => run_internal!(exit);
-        "M-Return" => run_external!(TERMINAL);
-        "M-p" => run_external!(LAUNCHER);
-        "M-b" => run_external!(BROWSER);
-
-        map: { "1", "2", "3", "4", "5", "6", "7", "8", "9" } to index_selectors(9) => {
-            "M-{}" => focus_workspace (REF);
-            "M-S-{}" => client_to_workspace (REF);
-        };
-    };
-
-    let mouse_bindings = gen_mousebindings! {
-        Press Right + [Meta] => |wm: &mut WindowManager<_>, _: &MouseEvent| wm.cycle_workspace(Forward),
-        Press Left + [Meta] => |wm: &mut WindowManager<_>, _: &MouseEvent| wm.cycle_workspace(Backward)
-    };
-
-    let mut wm = new_xcb_backed_window_manager(config, hooks, logging_error_handler())?;
-    wm.grab_keys_and_run(key_bindings, mouse_bindings)?;
-
-    Ok(())
+    keybindings::Keybindings::set_keybindings(config, hooks)
 }
