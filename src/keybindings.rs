@@ -22,7 +22,6 @@ pub struct Keybindings {
     pub exit: String,
 }
 
-
 impl Keybindings {
     pub fn set_keybindings(config:Config, hooks: Hooks<XcbConnection>) -> Result<()> {
         // TODO: remove and use config file
