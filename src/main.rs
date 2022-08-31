@@ -8,9 +8,11 @@ use penrose::{
 };
 use simplelog::{LevelFilter, SimpleLogger};
 
-use crate::config::{user_config, keybindings, on_startup};
+mod config;
+mod scripts;
 
-pub mod config;
+use config::{keybindings, user_config};
+use scripts::on_startup;
 
 fn main() -> Result<()> {
     if let Err(e) = SimpleLogger::init(LevelFilter::Info, simplelog::Config::default()) {
