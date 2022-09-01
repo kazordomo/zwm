@@ -22,5 +22,8 @@ fn main() -> Result<()> {
     let config = Config::default();
     let hooks: Hooks<XcbConnection> = vec![Box::new(on_startup::StartupScript::new("/usr/local/scripts/zwm-startup.sh"))];
 
-    keybindings::Keybindings::set(config, hooks)
+    theme::Theme::set(&config);
+    keybindings::Keybindings::set(config, hooks);
+
+    Ok(())
 }

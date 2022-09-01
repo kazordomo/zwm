@@ -25,7 +25,7 @@ pub struct Keybindings {
 }
 
 impl Keybindings {
-    pub fn set(config:Config, hooks: Hooks<XcbConnection>) -> Result<()> {
+    pub fn set(config:Config, hooks: Hooks<XcbConnection>) {
         let keybindings = gen_keybindings! {
             "M-j" => run_internal!(cycle_client, Forward);
             "M-k" => run_internal!(cycle_client, Backward);
@@ -59,9 +59,7 @@ impl Keybindings {
             Press Left + [Meta] => |wm: &mut WindowManager<_>, _: &MouseEvent| wm.cycle_workspace(Backward)
         };
 
-        let mut wm = new_xcb_backed_window_manager(config, hooks, logging_error_handler())?;
-        wm.grab_keys_and_run(keybindings, mouse_bindings)?;
-
-        Ok(())
+        let mut wm = new_xcb_backed_window_manager(config, hooks, logging_error_handler()).expect("Failed to init wm.");
+        wm.grab_keys_and_run(keybindings, mouse_bindings).expect("Failed to grab keybindings.");
     }
 }

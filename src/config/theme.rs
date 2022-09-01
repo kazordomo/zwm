@@ -1,21 +1,50 @@
 use std::fs;
 use serde_derive::Deserialize;
 
+use penrose::core::config::Config;
+
+#[derive(Deserialize)]
+struct BorderConfig {
+    focused_color: String,
+    unfocused_color: String,
+}
+
+#[derive(Deserialize)]
+struct BarConfig {
+    show: bool,
+}
+
 #[derive(Deserialize)]
 pub struct Theme {
-    default_border_color: String,
+    border: BorderConfig,
+    bar: BarConfig,
 }
 
 impl Theme {
-    pub fn load() {
+    pub fn set(config: &Config) {
         let data = load_theme_config();
 
-        println!("{}", data.default_border_color);
+        config.builder()
+            .focused_border(data.border.focused_color)
+            .unwrap()
+            .build()
+            .expect("Failed to set focused border color.");
+
+        config.builder()
+            .unfocused_border(data.border.unfocused_color)
+            .unwrap()
+            .build()
+            .expect("Failed to set unfocused border color.");
+            
+        config.builder()
+            .show_bar(data.bar.show)
+            .build()
+            .expect("Failed to set show bar value.");
     }
 }
 
 fn load_theme_config() -> Theme {
-    let content = match fs::read_to_string("config.toml") {
+    let content = match fs::read_to_string("theme.toml") {
         Ok(c) => c,
         Err(e) => {
             panic!("Could not read the config file: {}", e);
@@ -43,8 +72,8 @@ mod tests {
     }
 
     #[test]
-    fn load_theme() -> std::io::Result<()> {
-        Theme::load();
+    fn set_theme() -> std::io::Result<()> {
+        Theme::set(&Config::default());
         Ok(())
     }
 }

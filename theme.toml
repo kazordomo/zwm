@@ -1,0 +1,6 @@
+[border]
+focused_color = "#0aff70"
+unfocused_color= "#abb0af"
+
+[bar]
+show = false
