@@ -6,7 +6,7 @@ use penrose::{
     },
     logging_error_handler,
     xcb::new_xcb_backed_window_manager,
-    Backward, Forward, Less, More, Result, XcbConnection,
+    Backward, Forward, Less, More, XcbConnection,
 };
 
 #[derive(Deserialize)]

@@ -22,6 +22,7 @@ pub struct Theme {
 
 impl Theme {
     pub fn set(config: &Config) {
+        // TODO: error loading theme
         let data = load_theme_config();
 
         config.builder()
