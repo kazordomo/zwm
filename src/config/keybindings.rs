@@ -1,3 +1,4 @@
+use serde_derive::Deserialize;
 use penrose::{
     core::{
         bindings::MouseEvent, helpers::index_selectors, hooks::Hooks, config::Config,
@@ -8,6 +9,7 @@ use penrose::{
     Backward, Forward, Less, More, Result, XcbConnection,
 };
 
+#[derive(Deserialize)]
 pub struct Keybindings {
     pub next_client: String,
     pub prev_client: String,
@@ -23,15 +25,7 @@ pub struct Keybindings {
 }
 
 impl Keybindings {
-    pub fn set_keybindings(config:Config, hooks: Hooks<XcbConnection>) -> Result<()> {
-        let user_data = crate::user_config::Data::load(); 
-
-        const TERMINAL: &str = "alacritty";
-        const LAUNCHER: &str = "dmenu_run";
-        const BROWSER: &str = "google-chrome";
-
-        println!("{}", &user_data.programs.terminal);
-
+    pub fn set(config:Config, hooks: Hooks<XcbConnection>) -> Result<()> {
         let keybindings = gen_keybindings! {
             "M-j" => run_internal!(cycle_client, Forward);
             "M-k" => run_internal!(cycle_client, Backward);
@@ -50,9 +44,9 @@ impl Keybindings {
             "M-A-Right" => run_internal!(update_main_ratio, More);
             "M-A-Left" => run_internal!(update_main_ratio, Less);
             "M-A-Escape" => run_internal!(exit);
-            "M-Return" => run_external!(TERMINAL);
-            "M-p" => run_external!(LAUNCHER);
-            "M-b" => run_external!(BROWSER);
+            "M-Return" => run_external!("alacritty");
+            "M-p" => run_external!("dmenu_run");
+            "M-b" => run_external!("google-chrome");
 
             map: { "1", "2", "3", "4", "5", "6", "7", "8", "9" } to index_selectors(9) => {
                 "M-{}" => focus_workspace (REF);
@@ -68,17 +62,6 @@ impl Keybindings {
         let mut wm = new_xcb_backed_window_manager(config, hooks, logging_error_handler())?;
         wm.grab_keys_and_run(keybindings, mouse_bindings)?;
 
-        Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn load_user_config() -> std::io::Result<()> {
-        let user_data = crate::user_config::Data::load(); 
-
-        println!("{}", user_data.programs.terminal);
         Ok(())
     }
 }
