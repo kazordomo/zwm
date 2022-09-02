@@ -48,14 +48,16 @@ fn load_theme_config() -> Theme {
     let content = match fs::read_to_string("theme.toml") {
         Ok(c) => c,
         Err(e) => {
-            panic!("Could not read the config file: {}", e);
+            log::error!("Could not read the config file: {}", e);
+            std::process::exit(1);
         }
     };
 
     let data: Theme = match toml::from_str(&content) {
         Ok(d) => d,
         Err(e) => {
-            panic!("Error converting config file: {}", e);
+            log::error!("Could not convert the config file: {}", e);
+            std::process::exit(1);
         }
     };
 

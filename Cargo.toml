@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 penrose = "0.2.1"
+log = "0.4.7"
 simplelog = "0.12.0"
 toml = "0.5.9"
 serde = "1.0.143"
