@@ -37,8 +37,6 @@ impl Keybindings {
             "M-bracketleft" => run_internal!(cycle_screen, Backward);
             "M-S-bracketright" => run_internal!(drag_workspace, Forward);
             "M-S-bracketleft" => run_internal!(drag_workspace, Backward);
-            "M-grave" => run_internal!(cycle_layout, Forward);
-            "M-S-grave" => run_internal!(cycle_layout, Backward);
             "M-A-Up" => run_internal!(update_max_main, More);
             "M-A-Down" => run_internal!(update_max_main, Less);
             "M-A-Right" => run_internal!(update_main_ratio, More);
@@ -61,5 +59,20 @@ impl Keybindings {
 
         let mut wm = new_xcb_backed_window_manager(config, hooks, logging_error_handler()).expect("Failed to init wm.");
         wm.grab_keys_and_run(keybindings, mouse_bindings).expect("Failed to grab keybindings.");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::scripts::on_startup;
+
+    #[test]
+    fn set_keybindings() -> std::io::Result<()> {
+        let config = Config::default();
+        let hooks: Hooks<XcbConnection> = vec![Box::new(on_startup::StartupScript::new("/usr/local/scripts/zwm-startup.sh"))];
+
+        Keybindings::set(config, hooks);
+        Ok(())
     }
 }

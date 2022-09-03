@@ -14,7 +14,7 @@ use simplelog::{LevelFilter, WriteLogger};
 mod config;
 mod scripts;
 
-use config::{keybindings, theme};
+use config::keybindings;
 use scripts::on_startup;
 
 fn main() -> Result<()> {
@@ -23,9 +23,7 @@ fn main() -> Result<()> {
     let config = Config::default();
     let hooks: Hooks<XcbConnection> = vec![Box::new(on_startup::StartupScript::new("/usr/local/scripts/zwm-startup.sh"))];
 
-    // TODO: test with all config in here
-    // TODO: write error to file
-    theme::Theme::set(&config);
+    // theme::Theme::set(&config);
     keybindings::Keybindings::set(config, hooks);
 
     Ok(())

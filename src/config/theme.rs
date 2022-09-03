@@ -4,20 +4,20 @@ use serde_derive::Deserialize;
 use penrose::core::config::Config;
 
 #[derive(Deserialize)]
-struct BorderConfig {
-    focused_color: String,
-    unfocused_color: String,
+pub struct BorderConfig {
+    pub focused_color: String,
+    pub unfocused_color: String,
 }
 
 #[derive(Deserialize)]
-struct BarConfig {
-    show: bool,
+pub struct BarConfig {
+    pub show: bool,
 }
 
 #[derive(Deserialize)]
 pub struct Theme {
-    border: BorderConfig,
-    bar: BarConfig,
+    pub border: BorderConfig,
+    pub bar: BarConfig,
 }
 
 impl Theme {
@@ -25,22 +25,13 @@ impl Theme {
         // TODO: error loading theme
         let data = load_theme_config();
 
-        config.builder()
+        if let Err(e) = config.builder()
             .focused_border(data.border.focused_color)
             .unwrap()
-            .build()
-            .expect("Failed to set focused border color.");
-
-        config.builder()
-            .unfocused_border(data.border.unfocused_color)
-            .unwrap()
-            .build()
-            .expect("Failed to set unfocused border color.");
-            
-        config.builder()
-            .show_bar(data.bar.show)
-            .build()
-            .expect("Failed to set show bar value.");
+            .build() {
+                log::error!("Could not read the config file: {}", e);
+                std::process::exit(1);
+            }
     }
 }
 
